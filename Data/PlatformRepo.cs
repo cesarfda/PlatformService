@@ -18,7 +18,7 @@ namespace PlatformService.Data
 
         void IPlatformRepo.CreatePlatform(Platform plat)
         {
-            if(plat == null)
+            if (plat == null)
             {
                 throw new System.ArgumentNullException(nameof(plat));
             }
@@ -33,7 +33,12 @@ namespace PlatformService.Data
 
         Platform IPlatformRepo.GetPlatformById(int id)
         {
-            return _context.Platforms.FirstOrDefault(p => p.Id == id);
+            var platform = _context.Platforms.FirstOrDefault(p => p.Id == id);
+            if (platform == null)
+            {
+                throw new ArgumentException($"Platform with id {id} not found");
+            }
+            return platform;
         }
     }
 }
