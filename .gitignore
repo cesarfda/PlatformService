@@ -479,3 +479,4 @@ obj/PlatformService.csproj.nuget.dgspec.json
 obj/project.assets.json
 obj/project.nuget.cache
 obj/PlatformService.csproj.nuget.dgspec.json
+obj/Debug/net7.0/project.razor.json
