@@ -7,11 +7,8 @@ using PlatformService.Controllers;
 using PlatformService.Data;
 using PlatformService.Dtos;
 using PlatformService.Models;
-using PlatformService;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Xunit;
+using FluentAssertions;
+
 
 namespace PlatformService.Tests
 {
@@ -73,9 +70,9 @@ namespace PlatformService.Tests
             var result = _controller.GetPlatforms();
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var platforms = Assert.IsAssignableFrom<IEnumerable<PlatformReadDto>>(okResult.Value);
-            Assert.Equal(platformItems.Count, platforms.Count());
+            result.Result.Should().BeOfType<OkObjectResult>()
+                .Which.Value.Should().BeAssignableTo<IEnumerable<PlatformReadDto>>()
+                .Which.Should().HaveCount(platformItems.Count);
         }
 
         [Fact]
@@ -91,15 +88,34 @@ namespace PlatformService.Tests
             _context.SaveChanges();
 
             // Act
-            var result = _controller.GetPlatformById(Id:1);
+            var result = _controller.GetPlatformById(Id: 1);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var platform = Assert.IsType<PlatformReadDto>(okResult.Value);
-            Assert.Equal(platformItems[0].Id, platform.Id);
-            Assert.Equal(platformItems[0].Name, platform.Name);
-            Assert.Equal(platformItems[0].Publisher, platform.Publisher);
-            Assert.Equal(platformItems[0].Cost, platform.Cost);
+            result.Result.Should().BeOfType<OkObjectResult>()
+                .Which.Value.Should().BeOfType<PlatformReadDto>()
+                .Which.Should().BeEquivalentTo(platformItems[0], options => options.ExcludingMissingMembers());
+        }
+
+        [Fact]
+        public void CreatePlatform_ReturnsOk()
+        {
+            // Arrange
+            var platformItems = new List<Platform>()
+            {
+                new Platform { Id = 1, Name = "Platform 1", Publisher = "Publisher 1", Cost = "Free" },
+                new Platform { Id = 2, Name = "Platform 2", Publisher = "Publisher 2", Cost = "Paid" }
+            };
+            _context.Platforms.AddRange(platformItems);
+            _context.SaveChanges();
+
+            // Act
+            var result = _controller.CreatePlatform(new PlatformCreateDto { Name = "Platform 3", Publisher = "Publisher 3", Cost = "Free" });
+
+            // Assert
+            result.Result.Should().BeOfType<CreatedAtRouteResult>()
+                .Which.StatusCode.Should().Be(201);
+            result.Result.As<CreatedAtRouteResult>().RouteName.Should().Be("GetPlatformById");
+            result.Result.As<CreatedAtRouteResult>().RouteValues["id"].Should().Be(3);
         }
 
         public void Dispose()
