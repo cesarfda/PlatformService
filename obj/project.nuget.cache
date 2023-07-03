@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ifTGb53C5aTISWn5HATvghH06HWSgiqHeS9/3owl8yovpNHznluppl9H5+9hwPRzG+c96WRfCyc8hJ84mWmL0w==",
+  "dgSpecHash": "Mx8ed9BbrBdrDh2vOslu0BA4latjgKy6/eW/Uc6Nwj1NBPwWjAjqXSlIxJ/XtCjI+uScAKDPGY+0MPO0jHr6IQ==",
   "success": true,
-  "projectFilePath": "/home/cesarfa/repos/eda/platform/PlatformService/PlatformService.csproj",
+  "projectFilePath": "/home/cesarfa/repos/eda/microservices_project/PlatformService/PlatformService.csproj",
   "expectedPackageFiles": [
     "/home/cesarfa/.nuget/packages/automapper/12.0.1/automapper.12.0.1.nupkg.sha512",
     "/home/cesarfa/.nuget/packages/automapper.extensions.microsoft.dependencyinjection/12.0.1/automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

@@ -4479,11 +4479,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/cesarfa/repos/eda/platform/PlatformService/PlatformService.csproj",
+      "projectUniqueName": "/home/cesarfa/repos/eda/microservices_project/PlatformService/PlatformService.csproj",
       "projectName": "PlatformService",
-      "projectPath": "/home/cesarfa/repos/eda/platform/PlatformService/PlatformService.csproj",
+      "projectPath": "/home/cesarfa/repos/eda/microservices_project/PlatformService/PlatformService.csproj",
       "packagesPath": "/home/cesarfa/.nuget/packages/",
-      "outputPath": "/home/cesarfa/repos/eda/platform/PlatformService/obj/",
+      "outputPath": "/home/cesarfa/repos/eda/microservices_project/PlatformService/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/cesarfa/.nuget/NuGet/NuGet.Config"
