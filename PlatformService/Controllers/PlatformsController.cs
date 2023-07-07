@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PlatformService.Data;
 using PlatformService.Dtos;
 using PlatformService.Models;
+using PlatformService.SyncDataServices.Http;
 
 namespace PlatformService.Controllers
 {
@@ -13,12 +14,14 @@ namespace PlatformService.Controllers
         private readonly ILogger<PlatformsController> _logger;
         private readonly IMapper _mapper;
         private readonly IPlatformRepo _repository;
+        private readonly ICommandDataClient _commandDataClient;
 
-        public PlatformsController(ILogger<PlatformsController> logger, IMapper mapper, IPlatformRepo repository)
+        public PlatformsController(ILogger<PlatformsController> logger, IMapper mapper, IPlatformRepo repository, ICommandDataClient commandDataClient)
         {
             _logger = logger;
             _mapper = mapper;
             _repository = repository;
+            _commandDataClient = commandDataClient;
         }
 
         [HttpGet]
@@ -49,7 +52,7 @@ namespace PlatformService.Controllers
         }
 
         [HttpPost]
-        public ActionResult<PlatformReadDto> CreatePlatform(PlatformCreateDto platformCreateDto)
+        public async Task<ActionResult<PlatformReadDto>> CreatePlatform(PlatformCreateDto platformCreateDto)
         {
             _logger.LogInformation("--> Creating Platform...");
 
@@ -59,7 +62,16 @@ namespace PlatformService.Controllers
 
             var platformReadDto = _mapper.Map<PlatformReadDto>(platformModel);
 
-            return CreatedAtRoute(nameof(GetPlatformById), new { Id = platformReadDto.Id }, platformReadDto);
+            try
+            {
+                await _commandDataClient.SendPlatformToCommand(platformReadDto);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"--> Could not send synchronously: {ex.Message}");
+            }
+
+            return CreatedAtRoute(nameof(GetPlatformById), new { platformReadDto.Id }, platformReadDto);
         }
     }
 }
