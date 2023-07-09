@@ -7,7 +7,10 @@ using PlatformService.Controllers;
 using PlatformService.Data;
 using PlatformService.Dtos;
 using PlatformService.Models;
+using PlatformService.Profiles;
+using PlatformService.SyncDataServices.Http;
 using FluentAssertions;
+using Moq;
 
 
 namespace PlatformService.Tests
@@ -51,7 +54,11 @@ namespace PlatformService.Tests
             });
             _mapper = mapperConfig.CreateMapper();
             _repository = new PlatformRepo(_context);
-            _controller = new PlatformsController(_logger, _mapper, _repository);
+            var mockCommandDataClient = new Mock<ICommandDataClient>();
+            mockCommandDataClient.Setup(c => c.SendPlatformToCommand(It.IsAny<PlatformReadDto>()))
+            .Returns(Task.CompletedTask);
+
+            _controller = new PlatformsController(_logger, _mapper, _repository, mockCommandDataClient.Object);
         }
 
         [Fact]
@@ -97,7 +104,7 @@ namespace PlatformService.Tests
         }
 
         [Fact]
-        public void CreatePlatform_ReturnsOk()
+        public async void CreatePlatform_ReturnsOk()
         {
             // Arrange
             var platformItems = new List<Platform>()
@@ -109,12 +116,11 @@ namespace PlatformService.Tests
             _context.SaveChanges();
 
             // Act
-            var result = _controller.CreatePlatform(new PlatformCreateDto { Name = "Platform 3", Publisher = "Publisher 3", Cost = "Free" });
+            var result = await _controller.CreatePlatform(new PlatformCreateDto { Name = "Platform 3", Publisher = "Publisher 3", Cost = "Free" });
 
             // Assert
-            result.Result.Should().BeOfType<CreatedAtRouteResult>()
-                .Which.StatusCode.Should().Be(201);
-            result.Result.As<CreatedAtRouteResult>().RouteName.Should().Be("GetPlatformById");
+            result.Should().BeOfType<ActionResult<PlatformReadDto>>()
+                .Which.Result.Should().BeOfType<CreatedAtRouteResult>();
             result.Result.As<CreatedAtRouteResult>().RouteValues["id"].Should().Be(3);
         }
 
